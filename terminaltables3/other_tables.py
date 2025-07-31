@@ -39,6 +39,13 @@ class UnixTable(AsciiTable):
     CHAR_OUTER_TOP_INTERSECT = "\033(0\x77\033(B"
     CHAR_OUTER_TOP_LEFT = "\033(0\x6c\033(B"
     CHAR_OUTER_TOP_RIGHT = "\033(0\x6b\033(B"
+    CHAR_S_INNER_HORIZONTAL = "\033(0\x71\033(B"
+    CHAR_S_INNER_INTERSECT = "\033(0\x6e\033(B"
+    CHAR_S_INNER_VERTICAL = "\033(0\x78\033(B"
+    CHAR_S_OUTER_LEFT_INTERSECT = "\033(0\x74\033(B"
+    CHAR_S_OUTER_LEFT_VERTICAL = "\033(0\x78\033(B"
+    CHAR_S_OUTER_RIGHT_INTERSECT = "\033(0\x75\033(B"
+    CHAR_S_OUTER_RIGHT_VERTICAL = "\033(0\x78\033(B"
 
     @property
     def table(self):
@@ -83,6 +90,13 @@ class WindowsTable(AsciiTable):
     CHAR_OUTER_TOP_INTERSECT = b"\xc2".decode("ibm437")
     CHAR_OUTER_TOP_LEFT = b"\xda".decode("ibm437")
     CHAR_OUTER_TOP_RIGHT = b"\xbf".decode("ibm437")
+    CHAR_S_INNER_HORIZONTAL = b"\xc4".decode("ibm437")
+    CHAR_S_INNER_INTERSECT = b"\xc5".decode("ibm437")
+    CHAR_S_INNER_VERTICAL = b"\xb3".decode("ibm437")
+    CHAR_S_OUTER_LEFT_INTERSECT = b"\xc3".decode("ibm437")
+    CHAR_S_OUTER_LEFT_VERTICAL = b"\xb3".decode("ibm437")
+    CHAR_S_OUTER_RIGHT_INTERSECT = b"\xb4".decode("ibm437")
+    CHAR_S_OUTER_RIGHT_VERTICAL = b"\xb3".decode("ibm437")
 
 
 class WindowsTableDouble(AsciiTable):
@@ -117,6 +131,13 @@ class WindowsTableDouble(AsciiTable):
     CHAR_OUTER_TOP_INTERSECT = b"\xcb".decode("ibm437")
     CHAR_OUTER_TOP_LEFT = b"\xc9".decode("ibm437")
     CHAR_OUTER_TOP_RIGHT = b"\xbb".decode("ibm437")
+    CHAR_S_INNER_HORIZONTAL = b"\xcd".decode("ibm437")
+    CHAR_S_INNER_INTERSECT = b"\xce".decode("ibm437")
+    CHAR_S_INNER_VERTICAL = b"\xba".decode("ibm437")
+    CHAR_S_OUTER_LEFT_INTERSECT = b"\xcc".decode("ibm437")
+    CHAR_S_OUTER_LEFT_VERTICAL = b"\xba".decode("ibm437")
+    CHAR_S_OUTER_RIGHT_INTERSECT = b"\xb9".decode("ibm437")
+    CHAR_S_OUTER_RIGHT_VERTICAL = b"\xba".decode("ibm437")
 
 
 class SingleTable(WindowsTable if IS_WINDOWS else UnixTable):

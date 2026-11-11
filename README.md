@@ -2,7 +2,7 @@
 
 Easily draw tables in terminal/console applications from a list of lists of strings. Supports multi-line rows.
 
-Tested on Python 3.9+
+Tested on Python 3.8+
 
 **This is a fork of the terminaltables project. Which is archived and unmaintained. This library is in a new namespace
 but should otherwise be a drop in replacement. Maintaining goals consist of maintaining ecosystem compatibility, type

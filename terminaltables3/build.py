@@ -1,18 +1,19 @@
 """Combine cells into rows."""
 
-from typing import Generator, Iterator, Optional, Sequence, Union
+from collections.abc import Sized
+from typing import Generator, Iterable, Optional, Sequence, TypeVar, cast
 
 from terminaltables3.width_and_alignment import visible_width
 
+_Item = TypeVar("_Item", int, str)
+
 
 def combine(
-    line: Union[
-        Generator[Union[int, str], None, None], Iterator[Optional[Union[int, str]]]
-    ],
-    left: str,
-    intersect: Optional[str],
-    right: str,
-) -> Generator[int, None, None]:
+    line: Iterable[_Item],
+    left: Optional[_Item],
+    intersect: Optional[_Item],
+    right: Optional[_Item],
+) -> Generator[_Item, None, None]:
     """Zip borders between items in `line`.
 
     e.g. ('l', '1', 'c', '2', 'c', '3', 'r')
@@ -31,20 +32,21 @@ def combine(
     # Yield items with intersect characters.
     if intersect:
         try:
-            for j, i in enumerate(line, start=-len(line) + 1):
+            for j, i in enumerate(line, start=-len(cast(Sized, line)) + 1):
                 yield i
                 if j:
                     yield intersect
         except TypeError:  # Generator.
+            line_iterator = iter(line)
             try:
-                item = next(line)
+                item = next(line_iterator)
             except StopIteration:  # Was empty all along.
                 pass
             else:
                 while True:
                     yield item
                     try:
-                        peek = next(line)
+                        peek = next(line_iterator)
                     except StopIteration:
                         break
                     yield intersect

@@ -116,8 +116,7 @@ def test_windows_screenshot(tmpdir):
         screenshot.remove()
 
     # Generate script.
-    script_template = dedent(
-        """\
+    script_template = dedent("""\
     import os, time
     from colorclass import Color, Windows
     from terminaltables3 import AsciiTable
@@ -135,8 +134,7 @@ def test_windows_screenshot(tmpdir):
     print('Waiting for screenshot_until_match()...')
     while not os.path.exists(r'%s') and time.time() < stop_after:
         time.sleep(0.5)
-    """
-    )
+    """)
     script_contents = script_template % str(screenshot)
     script.write(script_contents.encode("utf-8"), mode="wb")
 

@@ -18,6 +18,11 @@ from terminaltables3.width_and_alignment import visible_width
         ("שלום", 4),
         ("معرب", 4),
         ("hello 世界", 10),
+        # Combining marks and emoji sequences.
+        ("e\u0301", 1),
+        ("\u0301", 0),
+        ("😀", 2),
+        ("👩\u200d💻", 2),
         # str+ansi
         ("\x1b[34mhello, world\x1b[39m", 12),
         ("\x1b[34m世界你好\x1b[39m", 8),

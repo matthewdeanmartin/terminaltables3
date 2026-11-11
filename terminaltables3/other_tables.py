@@ -140,7 +140,7 @@ class WindowsTableDouble(AsciiTable):
     CHAR_S_OUTER_RIGHT_VERTICAL = b"\xba".decode("ibm437")
 
 
-class SingleTable(WindowsTable if IS_WINDOWS else UnixTable):
+class SingleTable(WindowsTable if IS_WINDOWS else UnixTable):  # type: ignore[misc]
     """Cross-platform table with single-line box-drawing characters.
 
     :ivar iter table_data: List (empty or list of lists of strings) representing the table.

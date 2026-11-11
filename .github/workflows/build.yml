@@ -1,55 +1,81 @@
-name: Build and Test
-
-on: [ push ]
-
+name: Release
+on:
+  release:
+    types: [published]
+concurrency: changelog
+permissions:
+  contents: read
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-latest, ubuntu-latest]
-        python: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Install poetry
-        run: pipx install poetry
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          python-version: ${{ matrix.python }}
-          cache: poetry
+          ref: ${{ github.event.release.tag_name }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.14'
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+      - name: Verify tag source and lockfile
+        env:
+          EXPECTED: ${{ github.event.release.tag_name }}
+        run: |
+          VERSION="${EXPECTED#v}"
+          git fetch origin master
+          test "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)" || {
+            echo "::error::Release tag must point at the current master commit"
+            exit 1
+          }
+          uv lock --check
+          python - "$VERSION" <<'PY'
+          import pathlib
+          import sys
+          import tomllib
 
-      - name: Install Dependencies
-        run: poetry install --with dev
+          expected = sys.argv[1]
+          actual = tomllib.loads(pathlib.Path('pyproject.toml').read_text())['project']['version']
+          assert actual == expected, f'project version {actual} != release tag {expected}'
+          PY
+      - name: Test release source
+        run: |
+          uv sync --frozen --python 3.14
+          uv run --frozen pytest tests -q
+      - name: Build and validate distribution
+        env:
+          EXPECTED: ${{ github.event.release.tag_name }}
+        run: |
+          VERSION="${EXPECTED#v}"
+          uv build --no-sources
+          uvx --from 'twine>=7' twine check --strict dist/*
+          uvx --from 'check-wheel-contents>=0.6' check-wheel-contents dist/*.whl
+          python scripts/check_installed_distributions.py
+          python - "$VERSION" <<'PY'
+          import pathlib
+          import sys
 
-      - name: Run Makefile
-        run: make check
-      - name: Run make
-        run: poetry run make publish
-      - name: Upload Package
-        uses: actions/upload-artifact@v3.1.2
+          expected = sys.argv[1]
+          wheels = list(pathlib.Path('dist').glob('*.whl'))
+          assert len(wheels) == 1 and f'-{expected}-' in wheels[0].name, wheels
+          PY
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: packages
           path: dist/
           if-no-files-found: error
           retention-days: 1
-
-
   pypi-publish:
-    name: Upload release to PyPI
+    needs: build
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     environment:
       name: pypi
       url: https://pypi.org/p/terminaltables3
-    permissions:
-      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
-    # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     steps:
-      - name: Get packages
-        uses: actions/download-artifact@v3.0.2
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: packages
           path: dist/
-      - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-    needs: build
+      - uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2

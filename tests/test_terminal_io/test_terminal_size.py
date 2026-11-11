@@ -9,7 +9,6 @@ from terminaltables3.terminal_io import (
     IS_WINDOWS,
     terminal_size,
 )
-
 from tests.test_terminal_io import MockKernel32
 
 

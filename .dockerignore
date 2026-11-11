@@ -1,0 +1,11 @@
+.git
+.tox
+.venv
+.uv-cache
+__pycache__
+.pytest_cache
+.hypothesis
+.coverage
+coverage.xml
+dist
+build

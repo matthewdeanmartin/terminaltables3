@@ -1,6 +1,6 @@
 """Base table class. Define just the bare minimum to build tables."""
 
-from typing import Generator, Optional, Sequence, Tuple
+from typing import Dict, Generator, Optional, Sequence, Tuple
 
 from terminaltables3.build import build_border, build_row, flatten
 from terminaltables3.width_and_alignment import align_and_pad_cell, max_dimensions
@@ -58,6 +58,14 @@ class BaseTable:
     CHAR_S_OUTER_RIGHT_INTERSECT = "+"
     CHAR_S_OUTER_RIGHT_VERTICAL = "|"
 
+    def _is_separator(self, row: Sequence[str]) -> bool:
+        """Recognize a marker only when separators were explicitly enabled."""
+        return (
+            self.inner_separators
+            and bool(row)
+            and row[0] == self.inner_separators_delimiter
+        )
+
     def __init__(
         self, table_data: Sequence[Sequence[str]], title: Optional[str] = None
     ):
@@ -68,27 +76,29 @@ class BaseTable:
         """
         self.table_data = table_data
         self.title = title
-        self.separator_title = None
 
         self.inner_column_border = True
         self.inner_footing_row_border = False
         self.inner_heading_row_border = True
-        self.inner_separators = True
+        self.inner_separators = False
         self.inner_separators_delimiter = "---"
         self.inner_row_border = False
         self.outer_border = True
 
-        self.justify_columns = {}  # {0: 'right', 1: 'left', 2: 'center'}
+        self.justify_columns: Dict[int, str] = (
+            {}
+        )  # {0: 'right', 1: 'left', 2: 'center'}
         self.padding_left = 1
         self.padding_right = 1
 
     def horizontal_border(
-        self, style: str, outer_widths: Sequence[int], title
+        self, style: str, outer_widths: Sequence[int], title: Optional[str] = None
     ) -> Tuple[str, ...]:
         """Build any kind of horizontal border for the table.
 
         :param str style: Type of border to return.
         :param iter outer_widths: List of widths (with padding) for each column.
+        :param title: Optional title for this border. The top border uses the table title by default.
 
         :return: Prepared border as a tuple of strings.
         :rtype: tuple
@@ -100,7 +110,7 @@ class BaseTable:
                 self.CHAR_OUTER_TOP_INTERSECT if self.inner_column_border else ""
             )
             right = self.CHAR_OUTER_TOP_RIGHT
-            title = title
+            title = self.title if title is None else title
         elif style == "bottom":
             horizontal = self.CHAR_OUTER_BOTTOM_HORIZONTAL
             left = self.CHAR_OUTER_BOTTOM_LEFT
@@ -108,31 +118,26 @@ class BaseTable:
                 self.CHAR_OUTER_BOTTOM_INTERSECT if self.inner_column_border else ""
             )
             right = self.CHAR_OUTER_BOTTOM_RIGHT
-            title = title
         elif style == "heading":
             horizontal = self.CHAR_H_INNER_HORIZONTAL
             left = self.CHAR_H_OUTER_LEFT_INTERSECT if self.outer_border else ""
             intersect = self.CHAR_H_INNER_INTERSECT if self.inner_column_border else ""
             right = self.CHAR_H_OUTER_RIGHT_INTERSECT if self.outer_border else ""
-            title = title
         elif style == "footing":
             horizontal = self.CHAR_F_INNER_HORIZONTAL
             left = self.CHAR_F_OUTER_LEFT_INTERSECT if self.outer_border else ""
             intersect = self.CHAR_F_INNER_INTERSECT if self.inner_column_border else ""
             right = self.CHAR_F_OUTER_RIGHT_INTERSECT if self.outer_border else ""
-            title = title
         elif style == "separator":
             horizontal = self.CHAR_S_INNER_HORIZONTAL
             left = self.CHAR_S_OUTER_LEFT_INTERSECT if self.outer_border else ""
             intersect = self.CHAR_S_INNER_INTERSECT if self.inner_column_border else ""
             right = self.CHAR_S_OUTER_RIGHT_INTERSECT if self.outer_border else ""
-            title = title
         else:
             horizontal = self.CHAR_INNER_HORIZONTAL
             left = self.CHAR_OUTER_LEFT_INTERSECT if self.outer_border else ""
             intersect = self.CHAR_INNER_INTERSECT if self.inner_column_border else ""
             right = self.CHAR_OUTER_RIGHT_INTERSECT if self.outer_border else ""
-            title = title
         return build_border(outer_widths, horizontal, left, intersect, right, title)
 
     def gen_row_lines(
@@ -169,7 +174,7 @@ class BaseTable:
 
         # Resize row if it doesn't have enough cells.
         if len(row) != len(inner_widths):
-            row = row + [""] * (len(inner_widths) - len(row))
+            row = list(row) + [""] * (len(inner_widths) - len(row))
 
         # Pad and align each cell. Split each cell into lines to support multi-line cells.
         for i, cell in enumerate(row):
@@ -216,45 +221,48 @@ class BaseTable:
         """
         # Yield top border.
         if self.outer_border:
-            yield self.horizontal_border("top", outer_widths, title=self.title)
+            yield self.horizontal_border("top", outer_widths)
 
         # Yield table body.
-        row_count = len(self.table_data)
-        last_row_index, before_last_row_index = row_count - 1, row_count - 2
-        for i, row in enumerate(self.table_data):
+        rows = [
+            (i, row)
+            for i, row in enumerate(self.table_data)
+            if not self._is_separator(row)
+        ]
+        last_row_index, before_last_row_index = len(rows) - 1, len(rows) - 2
+        for i, (source_index, row) in enumerate(rows):
             # Yield the row line by line (e.g. multi-line rows).
             if self.inner_heading_row_border and i == 0:
                 style = "heading"
             elif self.inner_footing_row_border and i == last_row_index:
                 style = "footing"
-            elif self.inner_separators and row[0] == self.inner_separators_delimiter:
-                style = "separator"
             else:
                 style = "row"
-            if not style == "separator": # Don't return separator text
-                yield from self.gen_row_lines(row, style, inner_widths, inner_heights[i])
+            yield from self.gen_row_lines(
+                row, style, inner_widths, inner_heights[source_index]
+            )
             # If this is the last row then break. No separator needed.
             if i == last_row_index:
                 break
-            # Yield heading separator.
-            if style == "heading":
-                yield self.horizontal_border("heading", outer_widths, title=None)
-            # Yield footing separator.
+            markers = (
+                self.table_data[source_index + 1 : rows[i + 1][0]]
+                if self.inner_separators
+                else ()
+            )
+            if markers:
+                marker = markers[0]
+                marker_title = marker[1] if len(marker) > 1 else None
+                yield self.horizontal_border("separator", outer_widths, marker_title)
+            elif self.inner_heading_row_border and i == 0:
+                yield self.horizontal_border("heading", outer_widths)
             elif self.inner_footing_row_border and i == before_last_row_index:
-                yield self.horizontal_border("footing", outer_widths, title=None)
-            # Yield string-matched row separator.
-            elif style == "separator":
-                # If the second column exists then pass it as the border title.
-                title = row[1] if len(row) > 1 else None
-                yield self.horizontal_border("separator", outer_widths, title)
-            # Yield grid-style separator.
+                yield self.horizontal_border("footing", outer_widths)
             elif self.inner_row_border:
-                print("Yielding a separator row")
-                yield self.horizontal_border("row", outer_widths, title=None)
+                yield self.horizontal_border("row", outer_widths)
 
         # Yield bottom border.
         if self.outer_border:
-            yield self.horizontal_border("bottom", outer_widths, title=None)
+            yield self.horizontal_border("bottom", outer_widths)
 
     @property
     def table(self) -> str:

@@ -95,4 +95,4 @@ test*.png
 requirements*.txt
 .DS_Store
 
-.build_history/
+.venv/

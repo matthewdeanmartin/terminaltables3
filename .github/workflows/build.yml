@@ -8,8 +8,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest]
-        python: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        os: [windows-latest, macos-latest, ubuntu-latest]
+        python: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "3.15"]
     steps:
       - uses: actions/checkout@v3
       - name: Install poetry
@@ -22,11 +22,17 @@ jobs:
       - name: Install Dependencies
         run: poetry install --with dev
 
-      - name: Run Makefile
+      - name: Run Makefile checks
+        if: runner.os != 'Windows'
         run: make check
+      - name: Run tests on Windows
+        if: runner.os == 'Windows'
+        run: poetry run pytest tests --cov=terminaltables3 --cov-branch --cov-report=term-missing --cov-fail-under=75
       - name: Run make
+        if: runner.os != 'Windows'
         run: poetry run make publish
       - name: Upload Package
+        if: runner.os != 'Windows'
         uses: actions/upload-artifact@v3.1.2
         with:
           name: packages

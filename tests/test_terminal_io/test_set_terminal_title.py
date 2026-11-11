@@ -15,17 +15,14 @@ from tests.test_terminal_io import MockKernel32
 HERE = py.path.local(__file__).dirpath()
 
 
-@pytest.mark.skip("Fails on windows, I didn't touch it")
-@pytest.mark.parametrize("is_windows", [False, True])
 @pytest.mark.parametrize("mode", ["ascii", "unicode", "bytes"])
-def test(monkeypatch, is_windows, mode):
+def test_windows_dispatch(monkeypatch, mode):
     """Test function.
 
     :param monkeypatch: pytest fixture.
-    :param bool is_windows: Monkeypatch terminal_io.IS_WINDOWS
     :param str mode: Scenario to test for.
     """
-    monkeypatch.setattr("terminaltables3.terminal_io.IS_WINDOWS", is_windows)
+    monkeypatch.setattr("terminaltables3.terminal_io.IS_WINDOWS", True)
     kernel32 = MockKernel32()
 
     # Title.
@@ -38,9 +35,6 @@ def test(monkeypatch, is_windows, mode):
 
     # Run.
     assert set_terminal_title(title, kernel32)
-    if not is_windows:
-        return
-
     # Verify.
     if mode == "ascii":
         assert kernel32.setConsoleTitleA_called

@@ -33,7 +33,7 @@ test: clean .build_history/pylint .build_history/bandit
 	# $(VENV) pytest terminaltables3 --doctest-modules
 	# $(VENV) python -m unittest discover
     # not all tests run in all OSs, giving seemingly low coverage.
-	FORCE_COLOR=true $(VENV) py.test tests --cov=terminaltables3 --cov-report=html --cov-fail-under 75
+	FORCE_COLOR=true $(VENV) py.test tests --cov=terminaltables3 --cov-branch --cov-report=html --cov-fail-under 75
 
 .build_history:
 	@mkdir -p .build_history

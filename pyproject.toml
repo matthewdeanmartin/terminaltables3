@@ -85,3 +85,4 @@ format = "auto"
 [[tool.changelogmanager.components]]
 name = "default"
 changelog = "CHANGELOG.md"
+version_files = ["pyproject.toml", "terminaltables3/__init__.py"]

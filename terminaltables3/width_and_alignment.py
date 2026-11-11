@@ -24,18 +24,19 @@ def visible_width(string: str) -> int:
     if "\033" in string:
         string = RE_COLOR_ANSI.sub("", string)
 
-    # Convert to unicode.
-    try:
-        string = string.decode("u8")
-    except (AttributeError, UnicodeEncodeError):
-        pass
-
     width = 0
+    previous_width = 0
+    joined = False
     for char in string:
-        if unicodedata.east_asian_width(char) in ("F", "W"):
-            width += 2
+        if char == "\u200d":
+            joined = True
+        elif unicodedata.category(char) in ("Mn", "Me"):
+            continue
         else:
-            width += 1
+            char_width = 2 if unicodedata.east_asian_width(char) in ("F", "W") else 1
+            width += max(0, char_width - previous_width) if joined else char_width
+            previous_width = char_width
+            joined = False
 
     return width
 

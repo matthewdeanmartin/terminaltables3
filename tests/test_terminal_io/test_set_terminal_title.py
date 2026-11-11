@@ -7,7 +7,6 @@ import py
 import pytest
 
 from terminaltables3.terminal_io import IS_WINDOWS, set_terminal_title
-
 from tests import PROJECT_ROOT
 from tests.screenshot import RunNewConsole, screenshot_until_match
 from tests.test_terminal_io import MockKernel32
@@ -72,8 +71,7 @@ def test_windows_screenshot(tmpdir, mode):
         title = "b'test ASCII test'"
 
     # Generate script.
-    script_template = dedent(
-        """\
+    script_template = dedent("""\
     # coding: utf-8
     import os, time
     from terminaltables3.terminal_io import set_terminal_title
@@ -87,8 +85,7 @@ def test_windows_screenshot(tmpdir, mode):
     print('Waiting for screenshot_until_match()...')
     while not os.path.exists(r'{screenshot}') and time.time() < stop_after:
         time.sleep(0.5)
-    """
-    )
+    """)
     script_contents = script_template.format(
         change_title=str(change_title), title=title, screenshot=str(screenshot)
     )

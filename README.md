@@ -63,3 +63,28 @@ Source code for examples:
 - [example3.py](https://github.com/matthewdeanmartin/terminaltables/blob/master/example3.py)
 
 [Change Log](https://github.com/matthewdeanmartin/terminaltables/blob/master/CHANGELOG.md)
+
+## Run tests on Linux locally
+
+With Docker Desktop running:
+
+```sh
+docker build -f Dockerfile.test -t terminaltables3-tests .
+docker run --rm terminaltables3-tests
+```
+
+The image uses Debian slim with Python 3.12 and runs the full quality gate.
+
+## Local development
+
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then run:
+
+```sh
+uv sync --frozen
+make check
+```
+
+`make check` runs the same full quality gates as the Python 3.12 Linux job in
+GitHub Actions and the GitLab quality job. The other GitHub Actions jobs run
+`make test`'s pytest command on the remaining Python and operating system
+combinations. Run `make` to list all available targets.

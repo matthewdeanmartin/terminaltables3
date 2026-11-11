@@ -1,0 +1,14 @@
+image: ghcr.io/astral-sh/uv:0.13.0-python3.12-trixie-slim
+
+stages:
+  - quality
+
+variables:
+  UV_LINK_MODE: copy
+
+quality:
+  stage: quality
+  script:
+    - apt-get update && apt-get install -y --no-install-recommends make
+    - uv sync --frozen --python 3.12
+    - make check

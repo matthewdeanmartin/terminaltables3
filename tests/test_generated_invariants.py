@@ -16,9 +16,7 @@ def test_generated_tables_have_consistent_rendered_line_widths():
             rows = []
             for _ in range(row_count):
                 row_length = generator.randrange(column_count + 1)
-                rows.append(
-                    [generator.choice(cells) for _ in range(row_length)]
-                )
+                rows.append([generator.choice(cells) for _ in range(row_length)])
 
             for outer_border in (False, True):
                 for inner_column_border in (False, True):
@@ -30,4 +28,3 @@ def test_generated_tables_have_consistent_rendered_line_widths():
                     widths = {visible_width(line) for line in lines}
 
                     assert len(widths) <= 1, (rows, outer_border, inner_column_border)
-

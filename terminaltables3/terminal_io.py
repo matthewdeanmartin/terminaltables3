@@ -32,7 +32,7 @@ def get_console_info(kernel32, handle: int) -> Tuple[int, int]:
     # Query Win32 API.
     lpcsbi = ctypes.create_string_buffer(22)  # Populated by GetConsoleScreenBufferInfo.
     if not kernel32.GetConsoleScreenBufferInfo(handle, lpcsbi):
-        raise ctypes.WinError()  # Subclass of OSError.
+        raise getattr(ctypes, "WinError")()  # Subclass of OSError.
 
     # Parse data.
     left, top, right, bottom = struct.unpack("hhhhHhhhhhh", lpcsbi.raw)[5:-2]
@@ -52,7 +52,7 @@ def terminal_size(kernel32=None) -> Tuple[int, int]:
     :rtype: tuple
     """
     if IS_WINDOWS:
-        kernel32 = kernel32 or ctypes.windll.kernel32
+        kernel32 = kernel32 or getattr(ctypes, "windll").kernel32
         try:
             return get_console_info(kernel32, kernel32.GetStdHandle(STD_ERROR_HANDLE))
         except OSError:
@@ -82,21 +82,18 @@ def set_terminal_title(title: Union[str, bytes], kernel32=None) -> bool:
     :return: If title changed successfully (Windows only, always True on Linux/OSX).
     :rtype: bool
     """
-    try:
-        title_bytes = title.encode("utf-8")
-    except AttributeError:
-        title_bytes = title
+    title_bytes = title.encode("utf-8") if isinstance(title, str) else title
 
     if IS_WINDOWS:
-        kernel32 = kernel32 or ctypes.windll.kernel32
-        try:
-            is_ascii = all(ord(c) < 128 for c in title)  # str/unicode.
-        except TypeError:
-            is_ascii = all(c < 128 for c in title)  # bytes.
+        kernel32 = kernel32 or getattr(ctypes, "windll").kernel32
+        if isinstance(title, str):
+            is_ascii = all(ord(c) < 128 for c in title)
+        else:
+            is_ascii = all(c < 128 for c in title)
         if is_ascii:
             return kernel32.SetConsoleTitleA(title_bytes) != 0
         return kernel32.SetConsoleTitleW(title) != 0
 
     # Linux/OSX.
-    sys.stdout.write(b"\033]0;" + title_bytes + b"\007")
+    sys.stdout.write("\033]0;" + title_bytes.decode("utf-8", errors="replace") + "\007")
     return True

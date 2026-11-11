@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Support Python 3.15.
 
+### Fixed
+- Measure combining marks and joined emoji at their displayed terminal width.
+- Accept short tuple rows and set terminal titles on Unix.
+
 ## [4.0.0] - 2024-01-01
 ### Changed
 - New namespace and package name: terminaltables3

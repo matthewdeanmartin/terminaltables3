@@ -1,104 +1,80 @@
-# isort . && black . && bandit -r . && pylint && pre-commit run --all-files
-# Get changed files
+.DEFAULT_GOAL := help
+UV := uv
+RUN := $(UV) run --frozen
 
-FILES := $(wildcard **/*.py)
+.PHONY: help sync clean-pyc clean-test clean test isort black format-check pre-commit bandit pylint ruff mypy build dist-check changelog-check check
 
-# if you wrap everything in pipenv run, it runs slower.
-ifeq ($(origin VIRTUAL_ENV),undefined)
-    VENV := poetry run
-else
-    VENV :=
-endif
+help:
+	@echo "Available commands:"
+	@echo "  help             List all Makefile commands (default)"
+	@echo "  sync             Install dependencies from uv.lock"
+	@echo "  clean-pyc        Remove Python bytecode and __pycache__ directories"
+	@echo "  clean-test       Remove coverage data"
+	@echo "  clean            Run clean-pyc and clean-test"
+	@echo "  test             Run unit tests with branch coverage"
+	@echo "  isort            Format imports"
+	@echo "  black            Format Python code"
+	@echo "  format-check     Check Black and isort formatting"
+	@echo "  pre-commit       Run all pre-commit hooks"
+	@echo "  bandit           Run security checks on the package"
+	@echo "  pylint           Run pylint on the package"
+	@echo "  ruff             Run essential Ruff checks"
+	@echo "  mypy             Run static type checks"
+	@echo "  build            Build and validate sdist and wheel"
+	@echo "  dist-check       Check built metadata and wheel contents"
+	@echo "  changelog-check  Validate the changelog with kaclm"
+	@echo "  check            Run the same quality gates as GitHub Actions"
 
+sync:
+	$(UV) sync --frozen
 
-
-clean-pyc:  
-	@echo "Removing compiled files"
-	@find . -name '*.pyc' -exec rm -f {} + || true
-	@find . -name '*.pyo' -exec rm -f {} + || true
-	@find . -name '__pycache__' -exec rm -fr {} + || true
+clean-pyc:
+	@find . -name '*.pyc' -exec rm -f {} +
+	@find . -name '*.pyo' -exec rm -f {} +
+	@find . -name '__pycache__' -exec rm -fr {} +
 
 clean-test:
-	@echo "Removing coverage data"
-	@rm -f .coverage || true
-	@rm -f .coverage.* || true
+	@rm -f .coverage .coverage.*
 
 clean: clean-pyc clean-test
 
-# tests can't be expected to pass if dependencies aren't installed.
-# tests are often slow and linting is fast, so run tests on linted code.
-test: clean .build_history/pylint .build_history/bandit
-	@echo "Running unit tests"
-	export FORCE_COLOR=true
-	# $(VENV) pytest terminaltables3 --doctest-modules
-	# $(VENV) python -m unittest discover
-    # not all tests run in all OSs, giving seemingly low coverage.
-	FORCE_COLOR=true $(VENV) py.test tests --cov=terminaltables3 --cov-branch --cov-report=html --cov-fail-under 75
+test:
+	$(RUN) pytest tests --cov=terminaltables3 --cov-branch --cov-report=term-missing --cov-fail-under=95
 
-.build_history:
-	@mkdir -p .build_history
+isort:
+	$(RUN) python -X utf8 -m isort terminaltables3 tests
 
-.build_history/isort: .build_history $(FILES)
-	@echo "Formatting imports"
-	$(VENV) isort terminaltables3
-	@touch .build_history/isort
+black:
+	$(RUN) black terminaltables3 tests
 
-.PHONY: isort
-isort: .build_history/isort
+format-check:
+	$(RUN) python -X utf8 -m isort --check-only terminaltables3 tests
+	$(RUN) black --check terminaltables3 tests
 
-.build_history/black: .build_history .build_history/isort $(FILES)
-	@echo "Formatting code"
-	$(VENV) black . --exclude .virtualenv --exclude .tox
-	@touch .build_history/black
+pre-commit:
+	$(RUN) pre-commit run --all-files
 
-.PHONY: black
-black: .build_history/black
+bandit:
+	$(RUN) bandit -q -r terminaltables3
 
-.build_history/pre-commit: .build_history .build_history/isort .build_history/black
-	@echo "Pre-commit checks"
-	$(VENV) pre-commit run --all-files
-	@touch .build_history/pre-commit
+pylint:
+	$(RUN) pylint terminaltables3 --fail-under 10
 
-.PHONY: pre-commit
-pre-commit: .build_history/pre-commit
+ruff:
+	$(RUN) ruff check terminaltables3 tests --select E4,E7,E9,F
 
-.build_history/bandit: .build_history $(FILES)
-	@echo "Security checks"
-	$(VENV)  bandit .
-	@touch .build_history/bandit
-
-.PHONY: bandit
-bandit: .build_history/bandit
-
-.PHONY: pylint
-.build_history/pylint: .build_history .build_history/isort .build_history/black $(FILES)
-	@echo "Linting with pylint"
-	# TODO lint tests
-	$(VENV) pylint terminaltables3 --fail-under 10
-	@touch .build_history/pylint
-
-.PHONY: ruff
-.build_history/ruff: .build_history .build_history/isort .build_history/black $(FILES)
-	@echo "Linting with ruff"
-	$(VENV) ruff check terminaltables3 tests --fix
-	@touch .build_history/ruff
-
-.PHONY: ruff
-ruff: .build_history/ruff
-
-# for when using -j (jobs, run in parallel)
-.NOTPARALLEL: .build_history/isort .build_history/black
-
-check: test pylint ruff bandit pre-commit
-
-.PHONY: publish
-publish: check
-	rm -rf dist && poetry build
-
-.PHONY: build
-build: check
-	rm -rf dist && poetry build
-
-.PHONY: mypy
 mypy:
-	$(VENV) mypy terminaltables3 --ignore-missing-imports --check-untyped-defs
+	$(RUN) mypy terminaltables3 --ignore-missing-imports --check-untyped-defs
+
+build:
+	$(UV) build --no-sources
+	@"$(MAKE)" dist-check
+
+dist-check:
+	$(UV) run --with 'twine>=7' twine check --strict dist/*
+	$(RUN) check-wheel-contents dist/*.whl
+
+changelog-check:
+	$(UV) tool run --from keepachangelog-manager-fork kaclm validate
+
+check: format-check test ruff bandit pylint mypy build changelog-check

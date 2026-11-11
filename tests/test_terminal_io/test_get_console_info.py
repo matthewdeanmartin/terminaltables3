@@ -5,11 +5,10 @@ import ctypes
 import pytest
 
 from terminaltables3.terminal_io import (
-    get_console_info,
     INVALID_HANDLE_VALUE,
     IS_WINDOWS,
+    get_console_info,
 )
-
 from tests.test_terminal_io import MockKernel32
 
 

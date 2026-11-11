@@ -1,6 +1,6 @@
 """Base table class. Define just the bare minimum to build tables."""
 
-from typing import Generator, Optional, Sequence, Tuple
+from typing import Dict, Generator, Optional, Sequence, Tuple
 
 from terminaltables3.build import build_border, build_row, flatten
 from terminaltables3.width_and_alignment import align_and_pad_cell, max_dimensions
@@ -68,7 +68,9 @@ class BaseTable:
         self.inner_row_border = False
         self.outer_border = True
 
-        self.justify_columns = {}  # {0: 'right', 1: 'left', 2: 'center'}
+        self.justify_columns: Dict[int, str] = (
+            {}
+        )  # {0: 'right', 1: 'left', 2: 'center'}
         self.padding_left = 1
         self.padding_right = 1
 
@@ -153,7 +155,7 @@ class BaseTable:
 
         # Resize row if it doesn't have enough cells.
         if len(row) != len(inner_widths):
-            row = row + [""] * (len(inner_widths) - len(row))
+            row = list(row) + [""] * (len(inner_widths) - len(row))
 
         # Pad and align each cell. Split each cell into lines to support multi-line cells.
         for i, cell in enumerate(row):

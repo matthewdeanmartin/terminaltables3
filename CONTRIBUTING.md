@@ -8,26 +8,17 @@ You may follow these steps if you wish to create a pull request. Fork the repo a
 in the project's directory:
 
 ```bash
-virtualenv env  # Create a virtualenv for the project's dependencies.
-source env/bin/activate  # Activate the virtualenv.
-pip install tox  # Install tox, which runs linting and tests.
-tox  # This runs all tests on your local machine. Make sure they pass.
+uv sync --frozen
+make check
 ```
 
-If you don't have Python 2.6, 2.7, or 3.4 installed you can manually run tests on one specific version by running
-`tox -e lint,py35` (for Python 3.5) instead.
+Run tests with a specific Python version using `uv run --python 3.8 --frozen pytest tests`.
+The CI matrix covers Python 3.8, 3.12, and 3.15 on Linux and the low and high
+versions on macOS and Windows.
 
 ## Updating Docs
 
-You don't need to but if you wish to update the [Sphinx](http://sphinx-doc.org/) documentation for this project you can
-get started by running these commands:
-
-```bash
-source env/bin/activate
-pip install tox
-tox -e docs
-open docs/_build/html/index.html  # Opens this file in your browser.
-```
+Documentation lives in `docs/` and can be edited directly.
 
 ## Consistency and Style
 

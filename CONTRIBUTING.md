@@ -12,8 +12,8 @@ uv sync --frozen
 make check
 ```
 
-Run tests with a specific Python version using `uv run --python 3.8 --frozen pytest tests`.
-The CI matrix covers Python 3.8, 3.12, and 3.15 on Linux and the low and high
+Run tests with a specific Python version using `uv run --python 3.9 --frozen pytest tests`.
+The CI matrix covers Python 3.9, 3.12, and 3.15 on Linux and the low and high
 versions on macOS and Windows.
 
 ## Preparing a Release

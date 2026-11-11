@@ -18,4 +18,4 @@ jobs:
       - name: Create or update draft
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: uvx --from keepachangelog-manager-fork kaclm github-release --repository "$GITHUB_REPOSITORY"
+        run: uvx --from keepachangelog-manager-fork kaclm github-release --repository "$GITHUB_REPOSITORY" --draft

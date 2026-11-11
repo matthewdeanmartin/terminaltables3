@@ -19,13 +19,13 @@ versions on macOS and Windows.
 ## Preparing a Release
 
 1. Add user-visible changes under `Unreleased` in `CHANGELOG.md`.
-2. Run the **Prepare Release** GitHub workflow with the intended version. It
-   uses `kaclm` to update the changelog, `pyproject.toml`, and
-   `terminaltables3.__version__`, then opens a release pull request.
-3. Merge that pull request after its quality checks pass.
-4. Publish the matching draft GitHub Release from the current `master` commit.
-   The publishing workflow refuses a tag at another commit or a version that
-   differs from the package metadata.
+2. Each push to `master` refreshes the draft GitHub Release from `Unreleased`.
+   Review the draft's version and notes, then publish it from the current
+   `master` commit.
+3. Publishing runs `build.yml`: `kaclm release-bump` updates the changelog,
+   `pyproject.toml`, and `terminaltables3.__version__`, then opens a release
+   pull request. The workflow builds and publishes from that bumped branch.
+4. Merge the release pull request after the PyPI publish succeeds.
 
 ## Updating Docs
 

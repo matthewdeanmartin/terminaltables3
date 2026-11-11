@@ -6,30 +6,83 @@ concurrency: changelog
 permissions:
   contents: read
 jobs:
+  bump:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      branch: ${{ steps.release.outputs.branch }}
+      version: ${{ steps.release.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: master
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+      - name: Verify release targets current master
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_TARGET: ${{ github.event.release.target_commitish }}
+        run: |
+          test "$RELEASE_TARGET" = master || {
+            echo "::error::Release must target master"
+            exit 1
+          }
+          git fetch origin "refs/tags/${RELEASE_TAG}"
+          test "$(git rev-parse "${RELEASE_TAG}^{commit}")" = "$(git rev-parse HEAD)" || {
+            echo "::error::Release tag must point at the current master commit"
+            exit 1
+          }
+      - name: Configure git author
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Bump versions and open release PR
+        id: release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_ID: ${{ github.event.release.id }}
+        run: |
+          VERSION="${RELEASE_TAG#v}"
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          uvx --from keepachangelog-manager-fork kaclm release-bump \
+            --version "$VERSION" --base master --release-id "$RELEASE_ID" \
+            --repository "$GITHUB_REPOSITORY" --no-skip-ci --open-pr \
+            --title "chore: release ${VERSION}" \
+            --body "Automated release PR for ${VERSION}. Merge once the PyPI publish succeeds." \
+            --github-output --yes
+      - name: Update release lockfile
+        env:
+          RELEASE_BRANCH: ${{ steps.release.outputs.branch }}
+        run: |
+          uv lock
+          git add uv.lock
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: lock release dependencies"
+            git push origin "HEAD:refs/heads/${RELEASE_BRANCH}"
+          fi
   build:
+    needs: bump
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.release.tag_name }}
+          ref: ${{ needs.bump.outputs.branch }}
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.14'
       - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
-      - name: Verify tag source and lockfile
+      - name: Verify bumped version and lockfile
         env:
-          EXPECTED: ${{ github.event.release.tag_name }}
+          EXPECTED: ${{ needs.bump.outputs.version }}
         run: |
-          VERSION="${EXPECTED#v}"
-          git fetch origin master
-          test "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)" || {
-            echo "::error::Release tag must point at the current master commit"
-            exit 1
-          }
           uv lock --check
-          python - "$VERSION" <<'PY'
+          python - "$EXPECTED" <<'PY'
           import pathlib
           import sys
           import tomllib
@@ -44,14 +97,13 @@ jobs:
           uv run --frozen pytest tests -q
       - name: Build and validate distribution
         env:
-          EXPECTED: ${{ github.event.release.tag_name }}
+          EXPECTED: ${{ needs.bump.outputs.version }}
         run: |
-          VERSION="${EXPECTED#v}"
           uv build --no-sources
           uvx --from 'twine>=7' twine check --strict dist/*
           uvx --from 'check-wheel-contents>=0.6' check-wheel-contents dist/*.whl
           python scripts/check_installed_distributions.py
-          python - "$VERSION" <<'PY'
+          python - "$EXPECTED" <<'PY'
           import pathlib
           import sys
 

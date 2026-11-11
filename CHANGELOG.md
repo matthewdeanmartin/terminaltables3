@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Support Python 3.15.
+- Add opt-in horizontal separators with configurable delimiters and optional titles.
 
 ### Fixed
 - Measure combining marks and joined emoji at their displayed terminal width.

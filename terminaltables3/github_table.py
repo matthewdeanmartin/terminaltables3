@@ -1,6 +1,6 @@
 """GithubFlavoredMarkdownTable class."""
 
-from typing import Sequence
+from typing import Optional, Sequence
 
 from terminaltables3.ascii_table import AsciiTable
 from terminaltables3.build import combine
@@ -23,7 +23,7 @@ class GithubFlavoredMarkdownTable(AsciiTable):
         # Github flavored markdown table won't support title.
         super().__init__(table_data)
 
-    def horizontal_border(self, _, outer_widths):
+    def horizontal_border(self, _, outer_widths, title: Optional[str] = None):
         """Handle the GitHub heading border.
 
         E.g.:
@@ -31,6 +31,7 @@ class GithubFlavoredMarkdownTable(AsciiTable):
 
         :param _: Unused.
         :param iter outer_widths: List of widths (with padding) for each column.
+        :param title: Unused; Markdown tables do not place titles in borders.
 
         :return: Prepared border strings in a generator.
         :rtype: iter

@@ -50,6 +50,21 @@ class BaseTable:
     CHAR_OUTER_TOP_INTERSECT = "+"
     CHAR_OUTER_TOP_LEFT = "+"
     CHAR_OUTER_TOP_RIGHT = "+"
+    CHAR_S_INNER_HORIZONTAL = "-"
+    CHAR_S_INNER_INTERSECT = "+"
+    CHAR_S_INNER_VERTICAL = "|"
+    CHAR_S_OUTER_LEFT_INTERSECT = "+"
+    CHAR_S_OUTER_LEFT_VERTICAL = "|"
+    CHAR_S_OUTER_RIGHT_INTERSECT = "+"
+    CHAR_S_OUTER_RIGHT_VERTICAL = "|"
+
+    def _is_separator(self, row: Sequence[str]) -> bool:
+        """Recognize a marker only when separators were explicitly enabled."""
+        return (
+            self.inner_separators
+            and bool(row)
+            and row[0] == self.inner_separators_delimiter
+        )
 
     def __init__(
         self, table_data: Sequence[Sequence[str]], title: Optional[str] = None
@@ -65,6 +80,8 @@ class BaseTable:
         self.inner_column_border = True
         self.inner_footing_row_border = False
         self.inner_heading_row_border = True
+        self.inner_separators = False
+        self.inner_separators_delimiter = "---"
         self.inner_row_border = False
         self.outer_border = True
 
@@ -75,12 +92,13 @@ class BaseTable:
         self.padding_right = 1
 
     def horizontal_border(
-        self, style: str, outer_widths: Sequence[int]
+        self, style: str, outer_widths: Sequence[int], title: Optional[str] = None
     ) -> Tuple[str, ...]:
         """Build any kind of horizontal border for the table.
 
         :param str style: Type of border to return.
         :param iter outer_widths: List of widths (with padding) for each column.
+        :param title: Optional title for this border. The top border uses the table title by default.
 
         :return: Prepared border as a tuple of strings.
         :rtype: tuple
@@ -92,7 +110,7 @@ class BaseTable:
                 self.CHAR_OUTER_TOP_INTERSECT if self.inner_column_border else ""
             )
             right = self.CHAR_OUTER_TOP_RIGHT
-            title = self.title
+            title = self.title if title is None else title
         elif style == "bottom":
             horizontal = self.CHAR_OUTER_BOTTOM_HORIZONTAL
             left = self.CHAR_OUTER_BOTTOM_LEFT
@@ -100,25 +118,26 @@ class BaseTable:
                 self.CHAR_OUTER_BOTTOM_INTERSECT if self.inner_column_border else ""
             )
             right = self.CHAR_OUTER_BOTTOM_RIGHT
-            title = None
         elif style == "heading":
             horizontal = self.CHAR_H_INNER_HORIZONTAL
             left = self.CHAR_H_OUTER_LEFT_INTERSECT if self.outer_border else ""
             intersect = self.CHAR_H_INNER_INTERSECT if self.inner_column_border else ""
             right = self.CHAR_H_OUTER_RIGHT_INTERSECT if self.outer_border else ""
-            title = None
         elif style == "footing":
             horizontal = self.CHAR_F_INNER_HORIZONTAL
             left = self.CHAR_F_OUTER_LEFT_INTERSECT if self.outer_border else ""
             intersect = self.CHAR_F_INNER_INTERSECT if self.inner_column_border else ""
             right = self.CHAR_F_OUTER_RIGHT_INTERSECT if self.outer_border else ""
-            title = None
+        elif style == "separator":
+            horizontal = self.CHAR_S_INNER_HORIZONTAL
+            left = self.CHAR_S_OUTER_LEFT_INTERSECT if self.outer_border else ""
+            intersect = self.CHAR_S_INNER_INTERSECT if self.inner_column_border else ""
+            right = self.CHAR_S_OUTER_RIGHT_INTERSECT if self.outer_border else ""
         else:
             horizontal = self.CHAR_INNER_HORIZONTAL
             left = self.CHAR_OUTER_LEFT_INTERSECT if self.outer_border else ""
             intersect = self.CHAR_INNER_INTERSECT if self.inner_column_border else ""
             right = self.CHAR_OUTER_RIGHT_INTERSECT if self.outer_border else ""
-            title = None
         return build_border(outer_widths, horizontal, left, intersect, right, title)
 
     def gen_row_lines(
@@ -175,6 +194,10 @@ class BaseTable:
             left = self.CHAR_F_OUTER_LEFT_VERTICAL if self.outer_border else ""
             center = self.CHAR_F_INNER_VERTICAL if self.inner_column_border else ""
             right = self.CHAR_F_OUTER_RIGHT_VERTICAL if self.outer_border else ""
+        elif style == "separator":
+            left = self.CHAR_S_OUTER_LEFT_VERTICAL if self.outer_border else ""
+            center = self.CHAR_S_INNER_VERTICAL if self.inner_column_border else ""
+            right = self.CHAR_S_OUTER_RIGHT_VERTICAL if self.outer_border else ""
         else:
             left = self.CHAR_OUTER_LEFT_VERTICAL if self.outer_border else ""
             center = self.CHAR_INNER_VERTICAL if self.inner_column_border else ""
@@ -201,9 +224,13 @@ class BaseTable:
             yield self.horizontal_border("top", outer_widths)
 
         # Yield table body.
-        row_count = len(self.table_data)
-        last_row_index, before_last_row_index = row_count - 1, row_count - 2
-        for i, row in enumerate(self.table_data):
+        rows = [
+            (i, row)
+            for i, row in enumerate(self.table_data)
+            if not self._is_separator(row)
+        ]
+        last_row_index, before_last_row_index = len(rows) - 1, len(rows) - 2
+        for i, (source_index, row) in enumerate(rows):
             # Yield the row line by line (e.g. multi-line rows).
             if self.inner_heading_row_border and i == 0:
                 style = "heading"
@@ -211,17 +238,25 @@ class BaseTable:
                 style = "footing"
             else:
                 style = "row"
-            yield from self.gen_row_lines(row, style, inner_widths, inner_heights[i])
+            yield from self.gen_row_lines(
+                row, style, inner_widths, inner_heights[source_index]
+            )
             # If this is the last row then break. No separator needed.
             if i == last_row_index:
                 break
-            # Yield heading separator.
-            if self.inner_heading_row_border and i == 0:
+            markers = (
+                self.table_data[source_index + 1 : rows[i + 1][0]]
+                if self.inner_separators
+                else ()
+            )
+            if markers:
+                marker = markers[0]
+                marker_title = marker[1] if len(marker) > 1 else None
+                yield self.horizontal_border("separator", outer_widths, marker_title)
+            elif self.inner_heading_row_border and i == 0:
                 yield self.horizontal_border("heading", outer_widths)
-            # Yield footing separator.
             elif self.inner_footing_row_border and i == before_last_row_index:
                 yield self.horizontal_border("footing", outer_widths)
-            # Yield row separator.
             elif self.inner_row_border:
                 yield self.horizontal_border("row", outer_widths)
 

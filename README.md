@@ -52,6 +52,21 @@ table.table
 +--------------+--------------+
 ```
 
+To add a separator between selected rows, enable `inner_separators` and place
+the delimiter in the first cell of a marker row. The optional second cell is a
+title for that separator:
+
+```python
+table = AsciiTable([["Name"], ["Ada"], ["---", "Group B"], ["Bob"]])
+table.inner_separators = True
+print(table.table)
+```
+
+The delimiter defaults to `"---"` and can be changed with
+`table.inner_separators_delimiter`. Existing rows keep their usual meaning until
+`inner_separators` is enabled. Markdown tables continue to render marker rows
+as data.
+
 Example Implementations
 =======================
 ![Example Scripts Screenshot](https://github.com/matthewdeanmartin/terminaltables/blob/master/docs/examples.png?raw=true)

@@ -2,7 +2,7 @@
 UV := uv
 RUN := $(UV) run --frozen
 
-.PHONY: help sync clean-pyc clean-test clean test isort black format-check pre-commit bandit pylint ruff mypy build dist-check artifact-check changelog-check check
+.PHONY: help sync clean-pyc clean-test clean test isort black format-check pre-commit bandit pylint ruff mypy docs build dist-check artifact-check changelog-check check
 
 help:
 	@echo "Available commands:"
@@ -20,6 +20,7 @@ help:
 	@echo "  pylint           Run pylint on the package"
 	@echo "  ruff             Run essential Ruff checks"
 	@echo "  mypy             Run static type checks"
+	@echo "  docs             Build the Sphinx documentation"
 	@echo "  build            Build and validate sdist and wheel"
 	@echo "  dist-check       Check built metadata and wheel contents"
 	@echo "  artifact-check   Install and smoke-test the wheel and sdist"
@@ -66,6 +67,9 @@ ruff:
 
 mypy:
 	$(RUN) mypy terminaltables3 --ignore-missing-imports --check-untyped-defs
+
+docs:
+	$(UV) run --frozen --group docs sphinx-build -W -b html docs docs/_build/html
 
 build:
 	$(UV) build --no-sources

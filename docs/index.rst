@@ -1,12 +1,12 @@
-========================
-terminaltables |version|
-========================
+=========================
+terminaltables3 |version|
+=========================
 
 Easily draw tables in terminal/console applications from a list of lists of strings. As easy as:
 
 .. code-block:: pycon
 
-    >>> from terminaltables import AsciiTable
+    >>> from terminaltables3 import AsciiTable
     >>> table_data = [
     ... ['Heading1', 'Heading2'],
     ... ['row1 column1', 'row1 column2'],
@@ -14,7 +14,7 @@ Easily draw tables in terminal/console applications from a list of lists of stri
     ... ['row3 column1', 'row3 column2'],
     ... ]
     >>> table = AsciiTable(table_data)
-    >>> print table.table
+    >>> print(table.table)
     +--------------+--------------+
     | Heading1     | Heading2     |
     +--------------+--------------+
@@ -26,16 +26,16 @@ Easily draw tables in terminal/console applications from a list of lists of stri
 .. figure:: examples.png
     :target: _images/examples.png
 
-    Windows 10, Windows XP, and OS X are also supported. View source: :github:`example1.py`, :github:`example2.py`,
+    Linux, macOS, and Windows are also supported. View source: :github:`example1.py`, :github:`example2.py`,
     :github:`example3.py`
 
 Features
 ========
 
-* Multi-line rows: add newlines to table cells and terminatables will handle the rest.
-* Table titles: show a title embedded in the top border of the table.
-* POSIX: Python 2.6, 2.7, PyPy, PyPy3, 3.3, 3.4, and 3.5 supported on Linux and OS X.
-* Windows: Python 2.7, 3.3, 3.4, and 3.5 supported on Windows XP through 10.
+* Multi-line rows: add newlines to table cells and terminaltables3 will handle the rest.
+* Table titles: show a title embedded in the top border of the table (not supported by Markdown tables or PorcelainTable, which
+  have no top border to hold it).
+* Python: Python 3.8+ supported on Linux, macOS, and Windows.
 * CJK: Wide Chinese/Japanese/Korean characters displayed correctly.
 * RTL: Arabic and Hebrew characters aligned correctly.
 * Alignment/Justification: Align individual columns left, center, or right.
@@ -44,9 +44,10 @@ Features
 Project Links
 =============
 
-* Documentation: https://robpol86.github.io/terminaltables
-* Source code: https://github.com/Robpol86/terminaltables
-* PyPI homepage: https://pypi.python.org/pypi/terminaltables
+* Documentation: https://github.com/matthewdeanmartin/terminaltables3/tree/master/docs
+* Source code: https://github.com/matthewdeanmartin/terminaltables3
+* PyPI homepage: https://pypi.org/project/terminaltables3/
+* Change log: https://github.com/matthewdeanmartin/terminaltables3/blob/master/CHANGELOG.md
 
 .. toctree::
     :maxdepth: 2
@@ -73,5 +74,5 @@ Project Links
 
 .. _colorclass: https://github.com/Robpol86/colorclass
 .. _colorama: https://github.com/tartley/colorama
-.. _termcolor: https://pypi.python.org/pypi/termcolor
+.. _termcolor: https://pypi.org/project/termcolor/
 .. _ANSI escape codes: http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/x329.html

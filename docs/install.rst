@@ -9,11 +9,11 @@ Getting started is pretty simple. The first step is to install the library.
 Pip Install
 ===========
 
-The easiest way to get terminaltables is to use `pip <https://pip.pypa.io>`_. Simply run this command.
+The easiest way to get terminaltables3 is to use `pip <https://pip.pypa.io>`_. Simply run this command.
 
 .. code-block:: bash
 
-    pip install terminaltables
+    pip install terminaltables3
 
 Latest from GitHub
 ==================
@@ -23,16 +23,22 @@ repository.
 
 .. code-block:: bash
 
-    pip install git+https://github.com/Robpol86/terminaltables.git
+    pip install git+https://github.com/matthewdeanmartin/terminaltables3.git
 
 Clone and Install
 =================
 
 Lastly you can also just clone the repo and install from it. Usually you only need to do this if you plan on
-`contributing <https://github.com/Robpol86/terminaltables/blob/master/CONTRIBUTING.md>`_ to the project.
+`contributing <https://github.com/matthewdeanmartin/terminaltables3/blob/master/CONTRIBUTING.md>`_ to the project.
 
 .. code-block:: bash
 
-    git clone https://github.com/Robpol86/terminaltables.git
-    cd terminaltables
-    python setup.py install
+    git clone https://github.com/matthewdeanmartin/terminaltables3.git
+    cd terminaltables3
+    pip install .
+
+For development, use `uv <https://docs.astral.sh/uv/>`_ instead:
+
+.. code-block:: bash
+
+    uv sync --frozen

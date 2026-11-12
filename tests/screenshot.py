@@ -169,7 +169,7 @@ class RunNewConsole:
             assert width > 1
             assert height > 1
             yield left, top, right, bottom
-        raise StopIteration
+        return
 
 
 def iter_rows(pil_image):

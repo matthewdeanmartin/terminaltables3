@@ -12,6 +12,6 @@ from terminaltables3.other_tables import DoubleTable  # noqa
 from terminaltables3.other_tables import PorcelainTable  # noqa
 from terminaltables3.other_tables import SingleTable  # noqa
 
-__author__ = "@Robpol86"
+__author__ = "@Robpol86, @matthewdeanmartin"
 __license__ = "MIT"
 __version__ = "4.0.0"

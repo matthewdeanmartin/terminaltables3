@@ -4,8 +4,8 @@
 SingleTable
 ===========
 
-SingleTable uses `box drawing characters`_ for table borders. On POSIX (Linux/OS X) terminaltables uses ``Esc ( 0``
-characters while on Windows it uses `code page 437`_ characters.
+SingleTable uses `box drawing characters`_ for table borders. On POSIX (Linux/macOS) terminaltables3 emits DEC Special
+Graphics escape sequences (``ESC ( 0`` to switch to line drawing, ``ESC ( B`` to switch back) while on Windows it uses `code page 437`_ characters.
 
 .. image:: singletable.png
     :target: _images/singletable.png

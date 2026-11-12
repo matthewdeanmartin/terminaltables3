@@ -9,7 +9,7 @@ import pytest
 from tests import PROJECT_ROOT
 
 
-@pytest.mark.parametrize("filename", map("example{}.py".format, (1, 2, 3)))
+@pytest.mark.parametrize("filename", ["example1.py", "example2.py", "example3.py"])
 def test(filename):
     """Test with subprocess.
 

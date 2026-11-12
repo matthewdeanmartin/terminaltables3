@@ -4,8 +4,8 @@
 DoubleTable
 ===========
 
-DoubleTable uses `box drawing characters`_ for table borders. On Windows terminaltables uses `code page 437`_
-characters. However there is no equivalent character set for POSIX (Linux/OS X). Python automatically converts CP437
+DoubleTable uses `box drawing characters`_ for table borders. On Windows terminaltables3 uses `code page 437`_
+characters. However there is no equivalent character set for POSIX (Linux/macOS). Python automatically converts CP437
 double-line box characters to Unicode and displays that instead.
 
 .. image:: doubletable.png

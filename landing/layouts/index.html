@@ -1,0 +1,166 @@
+{{ define "main" }}
+{{ $p := .Site.Params }}
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top">terminaltables3</a>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#styles">Styles</a>
+      <a href="#faq">FAQ</a>
+      <a href="{{ $p.docs }}">Docs</a>
+      <a class="btn btn-small" href="{{ $p.github }}">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero wrap">
+    <p class="eyebrow">Python library · v{{ $p.version }}</p>
+    <h1>Tables for the terminal,<br>from a plain list of lists.</h1>
+    <p class="lead">{{ $p.description }} Multi-line cells, titles, column alignment, wide CJK characters and colored text all just work.</p>
+    <div class="cta">
+      <button class="install" data-copy="pip install terminaltables3" title="Copy to clipboard"><span class="prompt">$</span> pip install terminaltables3</button>
+      <a class="btn" href="{{ $p.docs }}">Read the docs</a>
+    </div>
+    <p class="badges">
+      <a href="{{ $p.pypi }}"><img alt="PyPI version" src="https://img.shields.io/pypi/v/terminaltables3.svg"></a>
+      <a href="{{ $p.pypi }}"><img alt="Supported Python versions" src="https://img.shields.io/pypi/pyversions/terminaltables3.svg"></a>
+      <a href="{{ $p.github }}/blob/master/LICENSE"><img alt="MIT license" src="https://img.shields.io/pypi/l/terminaltables3.svg"></a>
+    </p>
+  </section>
+
+  <section class="wrap demo">
+    <div class="pane">
+      <div class="pane-title">your_script.py</div>
+<pre><code>from terminaltables3 import AsciiTable
+
+table_data = [
+    ["Heading1", "Heading2"],
+    ["row1 column1", "row1 column2"],
+    ["row2 column1", "row2 column2"],
+    ["row3 column1", "row3 column2"],
+]
+table = AsciiTable(table_data)
+print(table.table)</code></pre>
+    </div>
+    <div class="pane">
+      <div class="pane-title">terminal</div>
+<pre><code>+--------------+--------------+
+| Heading1     | Heading2     |
++--------------+--------------+
+| row1 column1 | row1 column2 |
+| row2 column1 | row2 column2 |
+| row3 column1 | row3 column2 |
++--------------+--------------+</code></pre>
+    </div>
+  </section>
+
+  <section id="features" class="wrap">
+    <h2>Everything a table needs, nothing it doesn't</h2>
+    <div class="grid">
+      <article><h3>Multi-line cells</h3><p>Put newlines in a cell and rows grow to fit. No manual wrapping.</p></article>
+      <article><h3>Titles</h3><p>Embed a title in the top border of Ascii, Single and Double tables.</p></article>
+      <article><h3>Alignment</h3><p>Left, center or right justify any column, and tune padding per side.</p></article>
+      <article><h3>CJK &amp; RTL aware</h3><p>Wide Chinese/Japanese/Korean glyphs and Arabic/Hebrew text line up correctly.</p></article>
+      <article><h3>Color friendly</h3><p>Works with colorclass, colorama, termcolor, or raw ANSI escape codes.</p></article>
+      <article><h3>Row separators</h3><p>Optional inner separators group rows, with an optional label per separator.</p></article>
+      <article><h3>Typed &amp; tiny</h3><p>Type-annotated, pure Python, no runtime dependencies.</p></article>
+      <article><h3>Runs everywhere</h3><p>Linux, macOS and Windows on Python 3.8 through 3.15 and PyPy.</p></article>
+    </div>
+  </section>
+
+  <section id="styles" class="wrap">
+    <h2>Pick a style</h2>
+    <p class="sub">Same data, five looks. Swap the class and keep your code.</p>
+    <div class="grid styles">
+      <figure>
+        <figcaption><code>AsciiTable</code> <span>works anywhere</span></figcaption>
+<pre><code>+Produce--+-------+-----------+
+| Name    | Color | Type      |
++---------+-------+-----------+
+| Avocado | green | nut       |
+| Tomato  | red   | fruit     |
+| Lettuce | green | vegetable |
++---------+-------+-----------+</code></pre>
+      </figure>
+      <figure>
+        <figcaption><code>SingleTable</code> <span>box-drawing lines</span></figcaption>
+<pre><code>┌Produce──┬───────┬───────────┐
+│ Name    │ Color │ Type      │
+├─────────┼───────┼───────────┤
+│ Avocado │ green │ nut       │
+│ Tomato  │ red   │ fruit     │
+│ Lettuce │ green │ vegetable │
+└─────────┴───────┴───────────┘</code></pre>
+      </figure>
+      <figure>
+        <figcaption><code>DoubleTable</code> <span>double lines</span></figcaption>
+<pre><code>╔═════════╦═══════╦═══════════╗
+║ Name    ║ Color ║ Type      ║
+╠═════════╬═══════╬═══════════╣
+║ Avocado ║ green ║ nut       ║
+║ Tomato  ║ red   ║ fruit     ║
+║ Lettuce ║ green ║ vegetable ║
+╚═════════╩═══════╩═══════════╝</code></pre>
+      </figure>
+      <figure>
+        <figcaption><code>GithubFlavoredMarkdownTable</code> <span>paste into a README</span></figcaption>
+<pre><code>| Name    | Color | Type      |
+|---------|-------|-----------|
+| Avocado | green | nut       |
+| Tomato  | red   | fruit     |
+| Lettuce | green | vegetable |</code></pre>
+      </figure>
+      <figure>
+        <figcaption><code>PorcelainTable</code> <span>machine-friendly, like <code>git --porcelain</code></span></figcaption>
+<pre><code> Name    | Color | Type
+ Avocado | green | nut
+ Tomato  | red   | fruit
+ Lettuce | green | vegetable</code></pre>
+      </figure>
+    </div>
+  </section>
+
+  <section class="wrap split">
+    <div>
+      <h2>Fine control, one attribute at a time</h2>
+      <p>Tweak the table after you create it. Alignment, borders, padding, titles and separators are plain attributes.</p>
+      <p><a class="link" href="{{ $p.docs }}settings.html">Browse all settings →</a></p>
+    </div>
+<pre class="solo"><code>table = AsciiTable(table_data, "Produce")
+table.justify_columns[0] = "right"
+table.inner_row_border = True
+table.padding_left = 2
+print(table.table)</code></pre>
+  </section>
+
+  <section class="wrap callout">
+    <h2>Coming from <code>terminaltables</code>?</h2>
+    <p>terminaltables3 is a maintained fork of the archived <code>terminaltables</code> project, in a new namespace so the two never conflict. Replace <code>terminaltables</code> with <code>terminaltables3</code> in your imports and you're done.</p>
+<pre class="solo"><code>- from terminaltables import AsciiTable
++ from terminaltables3 import AsciiTable</code></pre>
+  </section>
+
+  <section id="faq" class="wrap">
+    <h2>FAQ</h2>
+    <details><summary>Which Python versions are supported?</summary><p>Python 3.8 and newer, on Linux, macOS and Windows, including PyPy.</p></details>
+    <details><summary>Does it have dependencies?</summary><p>No runtime dependencies. Color libraries such as colorama or termcolor are optional and only needed if you use them in your cells.</p></details>
+    <details><summary>Which style should I choose?</summary><p>AsciiTable renders on any terminal. SingleTable and DoubleTable look nicer where box-drawing is available. Use the Markdown table to generate README tables and PorcelainTable for output that other programs parse.</p></details>
+    <details><summary>Can I add a title?</summary><p>Yes, for Ascii, Single and Double tables. Markdown and Porcelain tables have no top border, so titles are ignored there.</p></details>
+    <details><summary>How do I report a bug or contribute?</summary><p>Open an issue or pull request on <a href="{{ $p.github }}">GitHub</a>. See CONTRIBUTING.md first.</p></details>
+  </section>
+
+  <section class="wrap final">
+    <h2>Ready in one command</h2>
+    <button class="install" data-copy="pip install terminaltables3" title="Copy to clipboard"><span class="prompt">$</span> pip install terminaltables3</button>
+    <p><a class="btn" href="{{ $p.docs }}quickstart.html">Quickstart</a> <a class="btn ghost" href="{{ $p.github }}">Star on GitHub</a></p>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <p>terminaltables3 is MIT licensed. Fork of <a href="https://github.com/Robpol86/terminaltables">terminaltables</a> by Robpol86.</p>
+    <p><a href="{{ $p.docs }}">Documentation</a> · <a href="{{ $p.pypi }}">PyPI</a> · <a href="{{ $p.github }}">GitHub</a> · <a href="{{ $p.github }}/blob/master/CHANGELOG.md">Changelog</a> · <a href="{{ $p.github }}/issues">Issues</a></p>
+  </div>
+</footer>
+{{ end }}

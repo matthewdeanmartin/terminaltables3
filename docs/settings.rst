@@ -4,13 +4,20 @@
 Settings
 ========
 
-All tables (except :ref:`githubtable`) have the same settings to change the way the table is displayed. These attributes
-are available after instantiation.
+AsciiTable, SingleTable, and DoubleTable share the settings below to change the way the table is displayed. These
+attributes are available after instantiation. Two other styles differ:
+
+* :ref:`githubtable` supports only ``table_data`` and ``justify_columns``. Titles, borders, and separators are not
+  supported.
+* ``PorcelainTable`` is an AsciiTable that turns off ``outer_border``, ``inner_heading_row_border``, and
+  ``inner_footing_row_border`` in its constructor. Because it has no outer border, titles are never shown.
 
 .. py:attribute:: Table.table_data
 
-    The actual table data to render. This must be a list (or tuple) of lists of strings. The outer list holds the rows
-    and the inner lists holds the cells (aka columns in that row).
+    The actual table data to render. This must be a sequence (such as a list or tuple) of rows, where each row is a
+    sequence of cells (aka columns in that row). Cells are usually strings, but any other value is converted with
+    ``str()`` when rendered. Rows shorter than the widest row are padded with empty cells. The outer sequence holds the
+    rows and the inner sequences hold the cells.
 
     Example:
 
@@ -42,7 +49,33 @@ are available after instantiation.
 
 .. py:attribute:: Table.inner_row_border
 
-    If **True** terminaltables will show dividing borders between every row.
+    If **True** terminaltables3 will show dividing borders between every row.
+
+.. py:attribute:: Table.inner_separators
+
+    If **True** rows whose first cell equals ``inner_separators_delimiter`` are rendered as horizontal separators
+    instead of data rows. Disabled by default, so existing tables are unaffected. Not supported by
+    :ref:`githubtable`, which renders every row as data.
+
+    Example:
+
+    .. code-block:: pycon
+
+        >>> table = AsciiTable([['Name'], ['Ada'], ['---', 'Group B'], ['Bob']])
+        >>> table.inner_separators = True
+        >>> print(table.table)
+        +------+---------+
+        | Name |         |
+        +------+---------+
+        | Ada  |         |
+        +Group B---------+
+        | Bob  |         |
+        +------+---------+
+
+.. py:attribute:: Table.inner_separators_delimiter
+
+    The first-cell value that marks a row as a separator when ``inner_separators`` is enabled. Defaults to
+    ``'---'``. An optional second cell in the marker row supplies a title for the separator.
 
 .. py:attribute:: Table.outer_border
 
@@ -59,7 +92,7 @@ are available after instantiation.
 
         >>> table.justify_columns[0] = 'right'  # Name column.
         >>> table.justify_columns[1] = 'center'  # Color column.
-        >>> print table.table
+        >>> print(table.table)
         +---------+-------+-----------+
         |    Name | Color | Type      |
         +---------+-------+-----------+

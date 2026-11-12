@@ -1,0 +1,11 @@
+baseURL = "https://matthewdeanmartin.github.io/terminaltables3/"
+languageCode = "en-us"
+title = "terminaltables3"
+disableKinds = ["taxonomy", "term", "RSS"]
+
+[params]
+  description = "Draw tables in terminal and console applications from a list of lists. Pure Python, zero dependencies."
+  version = "4.0.0"
+  github = "https://github.com/matthewdeanmartin/terminaltables3"
+  docs = "https://terminaltables3.readthedocs.io/"
+  pypi = "https://pypi.org/project/terminaltables3/"

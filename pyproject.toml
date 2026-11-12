@@ -65,6 +65,11 @@ dev = [
     "termcolor",
     "vermin>=1.6.0",
 ]
+docs = [
+    "myst-parser>=3.0,<4",
+    "sphinx>=7.1,<8",
+    "sphinx-rtd-theme>=2.0,<3",
+]
 
 [build-system]
 requires = ["hatchling>=1.27"]

@@ -4,12 +4,11 @@
 GithubFlavoredMarkdownTable
 ===========================
 
-GithubFlavoredMarkdownTable was initially implemented bcho_. It produces a `GitHub Flavored Markdown`_ formatted table.
+GithubFlavoredMarkdownTable was initially added in the original project's pull request bcho_. It produces a
+`GitHub Flavored Markdown`_ formatted table.
 
-Because there are no outer table borders:
-
-* Table titles are ignored.
-* Border display toggles are also ignored.
+Table titles are ignored because the Markdown table format has no place for them. The ``outer_border`` and
+``inner_column_border`` toggles are not supported by this format; leave them at their defaults.
 
 .. image:: githubtable.png
     :target: _images/githubtable.png
@@ -24,4 +23,4 @@ API
     :members: column_max_width, column_widths, ok, table_width, table
 
 .. _bcho: https://github.com/Robpol86/terminaltables/pull/12
-.. _GitHub Flavored Markdown: https://help.github.com/categories/writing-on-github
+.. _GitHub Flavored Markdown: https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/organizing-information-with-tables

@@ -4,7 +4,7 @@
 Quickstart
 ==========
 
-This section will go over the basics of terminaltables.
+This section will go over the basics of terminaltables3.
 
 Make sure that you've already :ref:`installed <install>` it.
 
@@ -15,7 +15,7 @@ Let's begin by importing AsciiTable, which just uses ``+``, ``-``, and ``|`` cha
 
 .. code-block:: pycon
 
-    >>> from terminaltables import AsciiTable
+    >>> from terminaltables3 import AsciiTable
 
 Now let's define the table data in a variable called ``data``. We'll do it the long way by creating an empty list
 representing the entire table. Then we'll add rows one by one. Each row is a list representing table cells.
@@ -33,7 +33,7 @@ one long string with newline characters so you can easily print it.
 .. code-block:: pycon
 
     >>> table = AsciiTable(data)
-    >>> print table.table
+    >>> print(table.table)
     +----------------------+----------------------+
     | Row one column one   | Row one column two   |
     +----------------------+----------------------+
@@ -52,7 +52,7 @@ row; all rows are just data.
 .. code-block:: pycon
 
     >>> table.inner_heading_row_border = False
-    >>> print table.table
+    >>> print(table.table)
     +----------------------+----------------------+
     | Row one column one   | Row one column two   |
     | Row two column one   | Row two column two   |
@@ -64,7 +64,7 @@ Now you want to add a title to the table:
 .. code-block:: pycon
 
     >>> table.title = 'My Table'
-    >>> print table.table
+    >>> print(table.table)
     +My Table--------------+----------------------+
     | Row one column one   | Row one column two   |
     | Row two column one   | Row two column two   |
@@ -76,7 +76,7 @@ Maybe you want lines in between all rows:
 .. code-block:: pycon
 
     >>> table.inner_row_border = True
-    >>> print table.table
+    >>> print(table.table)
     +My Table--------------+----------------------+
     | Row one column one   | Row one column two   |
     +----------------------+----------------------+
@@ -92,14 +92,14 @@ the sidebar.
 Other Table Styles
 ==================
 
-Terminaltables comes with a few other table styles than just ``AsciiTable``. All table styles more or less have the same
+Terminaltables3 comes with a few other table styles than just ``AsciiTable``. All table styles more or less have the same
 API.
 
 .. code-block:: pycon
 
-    >>> from terminaltables import SingleTable
+    >>> from terminaltables3 import SingleTable
     >>> table = SingleTable(data)
-    >>> print table.table
+    >>> print(table.table)
     ┌──────────────────────┬──────────────────────┐
     │ Row one column one   │ Row one column two   │
     ├──────────────────────┼──────────────────────┤

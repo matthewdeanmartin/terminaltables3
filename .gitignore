@@ -96,3 +96,8 @@ requirements*.txt
 .DS_Store
 
 .venv/
+
+# Hugo landing page build output
+landing/public/
+landing/resources/
+landing/.hugo_build.lock

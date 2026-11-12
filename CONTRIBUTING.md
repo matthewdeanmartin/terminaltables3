@@ -29,13 +29,19 @@ versions on macOS and Windows.
 
 ## Updating Docs
 
-Documentation lives in `docs/` and can be edited directly.
+Documentation lives in `docs/` and can be edited directly. Build it with:
+
+```bash
+make docs
+```
+
+The HTML output is written to `docs/_build/html`.
 
 ## Consistency and Style
 
 Keep code style consistent with the rest of the project. Some suggestions:
 
-1. **Write tests for your new features.** `if new_feature else` **Write tests for bug-causing scenarios.**
+1. **Write tests for your new features and for bug fixes.**
 2. Write docstrings for all classes, functions, methods, modules, etc.
 3. Document all function/method arguments and return values.
 4. Document all class variables instance variables.

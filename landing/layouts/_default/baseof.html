@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ .Site.Title }} — tables for the terminal</title>
+  <meta name="description" content="{{ .Site.Params.description }}">
+  <meta property="og:title" content="{{ .Site.Title }}">
+  <meta property="og:description" content="{{ .Site.Params.description }}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ .Site.BaseURL }}">
+  <link rel="icon" href="{{ "favicon.ico" | relURL }}">
+  {{ $css := resources.Get "css/site.css" | minify | fingerprint }}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}">
+</head>
+<body>
+  {{ block "main" . }}{{ end }}
+  <script>
+    document.querySelectorAll("[data-copy]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        navigator.clipboard.writeText(b.getAttribute("data-copy")).then(function () {
+          var t = b.textContent; b.textContent = "Copied!";
+          setTimeout(function () { b.textContent = t; }, 1500);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

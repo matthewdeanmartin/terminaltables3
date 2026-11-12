@@ -14,4 +14,4 @@ from terminaltables3.other_tables import SingleTable  # noqa
 
 __author__ = "@Robpol86"
 __license__ = "MIT"
-__version__ = "4.0.0"
+__version__ = "4.1.0"

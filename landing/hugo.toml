@@ -5,7 +5,7 @@ disableKinds = ["taxonomy", "term", "RSS"]
 
 [params]
   description = "Draw tables in terminal and console applications from a list of lists. Pure Python, zero dependencies."
-  version = "4.0.0"
+  version = "4.1.0"
   github = "https://github.com/matthewdeanmartin/terminaltables3"
-  docs = "https://terminaltables3.readthedocs.io/"
+  docs = "https://terminaltables3.readthedocs.io/en/latest/"
   pypi = "https://pypi.org/project/terminaltables3/"

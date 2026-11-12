@@ -44,7 +44,7 @@ Features
 Project Links
 =============
 
-* Documentation: https://github.com/matthewdeanmartin/terminaltables3/tree/master/docs
+* Documentation: https://terminaltables3.readthedocs.io/en/latest/
 * Source code: https://github.com/matthewdeanmartin/terminaltables3
 * PyPI homepage: https://pypi.org/project/terminaltables3/
 * Change log: https://github.com/matthewdeanmartin/terminaltables3/blob/master/CHANGELOG.md

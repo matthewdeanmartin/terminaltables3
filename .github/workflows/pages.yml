@@ -41,7 +41,13 @@ jobs:
             "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb"
           sudo dpkg -i "$RUNNER_TEMP/hugo.deb"
 
+      - name: Read package version
+        id: version
+        run: python3 -c "import tomllib; print('value=' + tomllib.load(open('pyproject.toml','rb'))['project']['version'])" >> "$GITHUB_OUTPUT"
+
       - name: Build site
+        env:
+          HUGO_PARAMS_VERSION: ${{ steps.version.outputs.value }}
         run: hugo --source landing --minify --gc
 
       - name: Upload Pages artifact

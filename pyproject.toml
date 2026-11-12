@@ -36,9 +36,9 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/matthewdeanmartin/terminaltables3"
+Homepage = "https://matthewdeanmartin.github.io/terminaltables3/"
 Repository = "https://github.com/matthewdeanmartin/terminaltables3"
-Documentation = "https://github.com/matthewdeanmartin/terminaltables3"
+Documentation = "https://terminaltables3.readthedocs.io/en/latest/"
 "Bug Tracker" = "https://github.com/matthewdeanmartin/terminaltables3/issues"
 "Change Log" = "https://github.com/matthewdeanmartin/terminaltables3/blob/master/CHANGELOG.md"
 
